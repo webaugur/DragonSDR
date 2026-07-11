@@ -1,0 +1,32 @@
+# Large upstream clones / build trees (not part of the thin meta-repo)
+AlexandreRouma/
+BatchDrake/
+KejPi/
+SoapySDR/
+albrechtl/
+antoniovazquezblanco/
+community/
+f4exb/
+g0orx/
+gnuradio/
+gqrx-sdr/
+greatscottgadgets/
+jketterl/
+ogre/
+qradiolink/
+righthalfplane/
+xmikos/
+Documentation/
+tools/
+openwebrx-local/
+
+# Local / generated
+*.pdf
+output.ts
+sync4.f32
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+*~
+.DS_Store
