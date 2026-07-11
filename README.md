@@ -57,9 +57,22 @@ Desktop launcher should set `OPENWEBRX_PREFIX` and exec `openwebrx-local/scripts
 
 ## Applications (local installs)
 
-Typical desktop apps under `~/Applications/` (not tracked here):
+Runtime prefixes under `~/Applications/` (not in git). Launchers set `LD_LIBRARY_PATH` / `PATH` for the prefix.
 
-OpenWebRX, SDR++, SDRangel, AbracaDABra, qradiolink, habdec, SigDigger, HackRF tools, …
+| App | Prefix | Launcher | Notes |
+|-----|--------|----------|--------|
+| OpenWebRX | `OpenWebRX/` | `openwebrx-local/scripts/openwebrx-serve.sh` | webaugur `develop` |
+| SDR++ | `SDRPlusPlus/` | `sdrpp-launch.sh` | webaugur `dragonsdr-build-fixes` + community modules; see `MODULES.md` |
+| SDRangel | `SDRangel/` | `sdrangel-launch.sh` | multi-device |
+| SigDigger | `SigDigger/` | `SigDigger` wrapper | plugins via `SUSCAN_PLUGIN_PATH`; `BUILD.md` for OOT builds |
+| habdec | `habdec/` | `habdec-launch.sh` | HAB RTTY; see `HAB.md` |
+| AbracaDABra / qradiolink / hackrf | respective dirs | `.desktop` | as installed |
+
+Generic helper: `openwebrx-local/scripts/app-launch.sh <PREFIX> <rel-bin>`.
+
+### Device sharing
+
+Only **one** process should open a given USB SDR at a time. Stop other SDR apps before starting another.
 
 ## Desktop (GNOME / Nautilus 50)
 
