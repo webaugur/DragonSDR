@@ -31,3 +31,6 @@ __pycache__/
 *.egg-info/
 *~
 .DS_Store
+# Ghidra install artifacts (keep README; ignore bulky downloads / clones)
+tools/ghidra/downloads/
+tools/ghidra/scripts/

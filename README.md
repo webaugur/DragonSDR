@@ -86,6 +86,13 @@ After changing `.desktop` files:
 ~/Documents/IndianaDell/scripts/gnome/sync-desktop-icons.sh
 ```
 
+## Ghidra (RE)
+
+- Install: `~/Applications/Ghidra/current` (12.1.2) + JDK 21  
+- Launch: `~/Applications/Ghidra/ghidra-launch.sh`  
+- Docs / plugins / scripts: `tools/ghidra/README.md`  
+- Script Manager also loads `~/ghidra_scripts/` (LazyGhidra, findcrypt, ninja helpers, …)
+
 ## License
 
 Meta documentation: free to use.  
