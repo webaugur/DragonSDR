@@ -19,6 +19,7 @@ Thin meta-repo for a local collection of SDR tools, install helpers, and notes.
 | [webaugur/habdec](https://github.com/webaugur/habdec) `dragonsdr-build-fixes` | HAB RTTY decoder modern C++ fixes |
 | [webaugur/ZeroMQPlugin](https://github.com/webaugur/ZeroMQPlugin) `dragonsdr-build-fixes` | SigDigger ZeroMQ plugin local path tweak |
 | [webaugur/SigDigger](https://github.com/webaugur/SigDigger) | Existing SigDigger fork (build artifacts stay local) |
+| [webaugur/radtel-950-pro](https://github.com/webaugur/radtel-950-pro) | Radtel RT-950 Pro tooling / experiments |
 
 ## Suggested disk layout
 
@@ -27,6 +28,7 @@ Thin meta-repo for a local collection of SDR tools, install helpers, and notes.
   README.md
   openwebrx-local/               # clone of webaugur/openwebrx-local
   jketterl/openwebrx/            # clone of webaugur/openwebrx (develop)
+  webaugur/radtel-950-pro/       # clone of webaugur/radtel-950-pro
   …other upstream trees…         # optional; gitignored here
 
 ~/Applications/OpenWebRX/        # runtime prefix (not in git)
@@ -67,6 +69,7 @@ Runtime prefixes under `~/Applications/` (not in git). Launchers set `LD_LIBRARY
 | SigDigger | `SigDigger/` | `SigDigger` wrapper | plugins via `SUSCAN_PLUGIN_PATH`; `BUILD.md` for OOT builds |
 | habdec | `habdec/` | `habdec-launch.sh` | HAB RTTY; see `HAB.md` |
 | AbracaDABra / qradiolink / hackrf | respective dirs | `.desktop` | as installed |
+| Radtel RT-950 Pro tools | (source) `webaugur/radtel-950-pro/` | — | HT / CPS tooling; see repo README |
 
 Generic helper: `openwebrx-local/scripts/app-launch.sh <PREFIX> <rel-bin>`.
 

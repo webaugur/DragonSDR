@@ -19,6 +19,7 @@ xmikos/
 Documentation/
 tools/
 openwebrx-local/
+webaugur/
 
 # Local / generated
 *.pdf
