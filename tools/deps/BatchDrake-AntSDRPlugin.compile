@@ -1,0 +1,11 @@
+build-essential
+cmake
+pkg-config
+git
+qt6-base-dev
+libqt6opengl6-dev
+libqt6openglwidgets6
+libfftw3-dev
+libsndfile1-dev
+libiio-dev
+libad9361-dev

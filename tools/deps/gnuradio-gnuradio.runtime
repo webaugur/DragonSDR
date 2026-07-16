@@ -1,0 +1,10 @@
+gnuradio
+libfftw3-single3
+libvolk3.3
+libspdlog1.15
+libsoapysdr0.8
+soapysdr0.8-module-all
+libportaudio2
+libasound2t64
+libzmq5
+libsndfile1

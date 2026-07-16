@@ -1,0 +1,10 @@
+build-essential
+pkg-config
+git
+qmake6
+qt6-base-dev
+libqt6opengl6-dev
+libqt6openglwidgets6
+libfftw3-dev
+libsndfile1-dev
+libasound2-dev

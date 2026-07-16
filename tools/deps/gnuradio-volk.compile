@@ -1,0 +1,5 @@
+build-essential
+cmake
+pkg-config
+git
+python3-dev

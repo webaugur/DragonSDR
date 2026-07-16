@@ -1,0 +1,7 @@
+build-essential
+cmake
+pkg-config
+git
+libfftw3-dev
+libsndfile1-dev
+libvolk-dev

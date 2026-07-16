@@ -1,0 +1,6 @@
+build-essential
+cmake
+pkg-config
+git
+# Upstream development moved to codeberg.org/qradiolink/qradiolink
+# Clone may be incomplete; refresh package list after re-cloning.

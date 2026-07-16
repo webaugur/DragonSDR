@@ -1,0 +1,5 @@
+build-essential
+cmake
+pkg-config
+git
+libusb-1.0-0-dev

@@ -1,0 +1,13 @@
+build-essential
+cmake
+pkg-config
+git
+libfftw3-dev
+libsndfile1-dev
+libvolk-dev
+zlib1g-dev
+libxml2-dev
+libsoapysdr-dev
+libjson-c-dev
+portaudio19-dev
+libasound2-dev

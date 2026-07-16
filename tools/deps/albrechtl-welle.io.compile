@@ -1,0 +1,14 @@
+build-essential
+cmake
+pkg-config
+git
+qt6-base-dev
+qt6-declarative-dev
+qt6-multimedia-dev
+libfftw3-dev
+libfaad-dev
+libmpg123-dev
+librtlsdr-dev
+libusb-1.0-0-dev
+libairspy-dev
+libsoapysdr-dev

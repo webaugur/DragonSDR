@@ -1,0 +1,11 @@
+build-essential
+cmake
+pkg-config
+git
+libsoapysdr-dev
+freeglut3-dev
+libgl1-mesa-dev
+libglu1-mesa-dev
+librtaudio-dev
+libfftw3-dev
+libusb-1.0-0-dev

@@ -1,0 +1,11 @@
+libfftw3-single3
+libsndfile1
+libvolk3.3
+zlib1g
+libxml2
+libsoapysdr0.8
+soapysdr-tools
+soapysdr0.8-module-all
+libjson-c5
+libportaudio2
+libasound2t64

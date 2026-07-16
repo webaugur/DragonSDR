@@ -1,0 +1,10 @@
+build-essential
+pkg-config
+git
+qmake6
+qt6-base-dev
+qt6-base-dev-tools
+qt6-tools-dev
+libqt6opengl6-dev
+libqt6openglwidgets6
+libgl1-mesa-dev

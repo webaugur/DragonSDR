@@ -12,17 +12,40 @@ gnuradio/
 gqrx-sdr/
 greatscottgadgets/
 jketterl/
+jpenalbae/
 ogre/
 qradiolink/
 righthalfplane/
 xmikos/
-Documentation/
-tools/
 openwebrx-local/
 webaugur/
+orhun/
+alemidev/
+zaghaghi/
+YS-L/
+
+# Generated / vendored docs (source of truth may live under tools/docs)
+Documentation/
+*.pdf
+
+# HackRF / Mayhem workspace — track scripts + MANIFEST; ignore bulky local assets
+hackrf/repos/
+hackrf/sd-card/
+hackrf/releases/*.zip
+hackrf/releases/*.tar
+hackrf/build/
+hackrf/venv-urh/
+hackrf/local/
+hackrf/firmware/
+hackrf/captures/
+hackrf/examples/
+
+# tools/: track install helpers; ignore bulk / logs
+tools/last-install-suite.log
+tools/ghidra/downloads/
+tools/ghidra/scripts/
 
 # Local / generated
-*.pdf
 output.ts
 sync4.f32
 __pycache__/
@@ -31,6 +54,7 @@ __pycache__/
 *.egg-info/
 *~
 .DS_Store
-# Ghidra install artifacts (keep README; ignore bulky downloads / clones)
-tools/ghidra/downloads/
-tools/ghidra/scripts/
+
+# Windows reverse-engineering dump leftovers (not part of suite)
+KDH.*.resources
+costura.*.compressed

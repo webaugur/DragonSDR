@@ -1,0 +1,7 @@
+build-essential
+autotools-dev
+autoconf
+automake
+libtool
+pkg-config
+git

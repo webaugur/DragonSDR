@@ -1,0 +1,8 @@
+build-essential
+cmake
+pkg-config
+git
+libhdf5-dev
+libpng-dev
+libboost-all-dev
+python3-dev

@@ -1,0 +1,11 @@
+build-essential
+cmake
+pkg-config
+git
+gnuradio-dev
+qt6-base-dev
+libqt6svg6-dev
+libvolk-dev
+libpulse-dev
+portaudio19-dev
+libsoapysdr-dev

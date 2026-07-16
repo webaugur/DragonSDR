@@ -1,0 +1,7 @@
+python3
+python3-numpy
+python3-soapysdr
+libfftw3-single3
+libsoapysdr0.8
+soapysdr-tools
+soapysdr0.8-module-all

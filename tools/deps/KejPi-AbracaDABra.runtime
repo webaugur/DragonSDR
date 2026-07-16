@@ -1,0 +1,15 @@
+libqt6core6t64
+libqt6gui6
+libqt6widgets6
+libqt6qml6
+libqt6quick6
+libqt6multimedia6
+libqt6svg6
+libfftw3-single3
+libfaad2
+libmpg123-0t64
+librtlsdr0
+libairspy0
+libusb-1.0-0t64
+libsoapysdr0.8
+soapysdr0.8-module-all

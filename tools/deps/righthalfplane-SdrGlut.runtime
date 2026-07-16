@@ -1,0 +1,8 @@
+libsoapysdr0.8
+soapysdr0.8-module-all
+libglut3.12
+libgl1
+libglu1-mesa
+librtaudio7
+libfftw3-single3
+libusb-1.0-0t64
