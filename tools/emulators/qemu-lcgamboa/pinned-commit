@@ -1,0 +1,5 @@
+picsimlab-esp32
+# lcgamboa/qemu ref (branch or commit) used for all DragonSDR QEMU builds.
+# This branch is publicly available and contains the ESP32 / ESP32-C3
+# simulation work that Velxio depends on.
+# Update only after testing a newer ref end-to-end.

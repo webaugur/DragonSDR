@@ -1,0 +1,24 @@
+# Stable softmmu targets to build for DragonSDR / Velxio use.
+# One architecture per line.  The script will attempt
+# --target-list=<arch>-softmmu for each.
+#
+# Keep this list conservative — only targets known to compile
+# cleanly on the pinned commit with the fork's patches.
+
+arm
+aarch64
+riscv32
+riscv64
+xtensa
+i386
+x86_64
+mips
+mipsel
+mips64
+ppc
+ppc64
+sparc
+sparc64
+m68k
+sh4
+nios2
