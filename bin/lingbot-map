@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Launcher for LingBot-Map interactive demo.
+exec "$(cd "$(dirname "$0")/.." && pwd)/tools/lingbot-map/serve.sh" "$@"

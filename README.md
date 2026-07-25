@@ -9,14 +9,16 @@ Thin meta-repo for a local collection of SDR tools, install helpers, and notes.
 IndianaDell and other lab machines should install the SDR stack from **here**, not from workstation-specific repos.
 
 ```bash
-# Full suite: apt SDR/ham packages, HackRF host build, Mayhem assets, URH venv, udev
+# Full suite: apt SDR/ham, HackRF/Mayhem/URH, udev, + Renode/Velxio emulators (default on)
 ~/Documents/DragonSDR/bin/install-suite
 
 # Variants
 ~/Documents/DragonSDR/bin/install-suite --verify-only
 ~/Documents/DragonSDR/bin/install-suite --apt-only
+~/Documents/DragonSDR/bin/install-suite --emulators-only   # Renode + Velxio only
 SKIP_HACKRF_BUILD=1 ~/Documents/DragonSDR/bin/install-suite
-SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite   # skip fldigi/wsjtx/etc.
+SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite         # skip fldigi/wsjtx/etc.
+SKIP_EMULATORS=1 ~/Documents/DragonSDR/bin/install-suite   # skip Renode/Velxio
 ```
 
 | Path | Role |
@@ -25,7 +27,9 @@ SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite   # skip fldigi/wsjtx/etc.
 | `tools/package-lists.sh` | Apt package arrays (`APT_SDR`, `APT_HAM`, …) |
 | `tools/install-deps.sh` | Per-upstream compile/runtime deps |
 | `hackrf/` | HackRF host tools, PortaPack Mayhem, URH workspace |
+| `tools/emulators/` | Renode + Velxio (on by default with suite install) |
 | `bin/hackrf-*`, `bin/urh` | Launchers for Mayhem / URH |
+| `bin/renode`, `bin/velxio` | Embedded emulator launchers |
 
 ```bash
 source ~/Documents/DragonSDR/bin/hackrf-env
@@ -78,6 +82,28 @@ cargo install --path YS-L/csvlens
 
 Ensure `~/.cargo/bin` is on `PATH`. Examples: `binsider ./some.elf`, `csvlens data.csv`, `openapi-tui -i openapi.yaml`, `scope-tui` (PipeWire/ALSA audio).
 
+## 3D reconstruction (GPU service)
+
+| Tool | Upstream | Local path | Runtime (Thumper) |
+|------|----------|------------|-------------------|
+| **LingBot-Map** | [Robbyant/lingbot-map](https://github.com/Robbyant/lingbot-map) | `Robbyant/lingbot-map/` | `~/Data/lingbot-map/` + viser `:8080` |
+
+Streaming feed-forward 3D scene reconstruction from image folders or video. Needs CUDA GPU + ~5 GB checkpoint. Lab host **`user@thumper.local`** (TITAN Xp 12 GB, large `~/Data` pool) is the intended runtime.
+
+```bash
+# on thumper
+cd ~/Documents/DragonSDR
+./tools/lingbot-map/install.sh --download-model long
+./tools/lingbot-map/serve.sh          # http://thumper.local:8080
+
+# optional always-on viewer
+cp tools/lingbot-map/lingbot-map.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now lingbot-map.service
+```
+
+Details, VRAM flags, and systemd notes: [`tools/lingbot-map/README.md`](tools/lingbot-map/README.md).
+
 ## Suggested disk layout
 
 ```text
@@ -94,10 +120,19 @@ Ensure `~/.cargo/bin` is on `PATH`. Examples: `binsider ./some.elf`, `csvlens da
   alemidev/scope-tui/            # audio scope TUI
   zaghaghi/openapi-tui/          # OpenAPI TUI
   YS-L/csvlens/                  # CSV TUI
+  Robbyant/lingbot-map/          # streaming 3D recon (GPU; often only on Thumper)
+  tools/lingbot-map/             # install + serve + systemd unit
+  tools/emulators/               # Renode + Velxio installers / docs (suite default)
+  tools/emulators/velxio/        # Velxio clone (gitignored bulk)
   …other upstream trees…         # optional; gitignored here
 
 ~/Applications/OpenWebRX/        # runtime prefix (not in git)
   bin/ lib/ venv/ data/ openwebrx.conf
+~/Applications/Renode/           # Renode portable (suite default)
+~/Applications/Ghidra/           # Ghidra RE
+
+# Thumper GPU runtime (not in git)
+~/Data/lingbot-map/              # venv, models (~4.6G), outputs, lingbot-map.env
 ```
 
 ## OpenWebRX quick start
@@ -138,6 +173,9 @@ Runtime prefixes under `~/Applications/` (not in git). Launchers set `LD_LIBRARY
 | Radtel RT-950 Pro tools | (source) `webaugur/radtel-950-pro/` | — | HT / CPS tooling; see repo README |
 | lcarsde | (source) `webaugur/lcarsde/` | — | LCARS desktop / task-oriented UI |
 | binsider / scope-tui / openapi-tui / csvlens | cargo `~/.cargo/bin/` | from source trees above | Rust TUIs |
+| Renode | `Renode/` | `bin/renode` | suite default; see `tools/emulators/` |
+| Velxio | `tools/emulators/velxio/` | `bin/velxio` | suite default; Docker/npm for UI |
+| LingBot-Map | `~/Data/lingbot-map/` (Thumper) | `tools/lingbot-map/serve.sh` | viser `:8080`; see `tools/lingbot-map/README.md` |
 
 Generic helper: `openwebrx-local/scripts/app-launch.sh <PREFIX> <rel-bin>`.
 
@@ -172,6 +210,25 @@ Workstation rebuild no longer vendors SDR apt lists or the HackRF tree. After co
 - Launch: `~/Applications/Ghidra/ghidra-launch.sh`  
 - Docs / plugins / scripts: `tools/ghidra/README.md`  
 - Script Manager also loads `~/ghidra_scripts/` (LazyGhidra, findcrypt, ninja helpers, …)
+
+## Embedded emulators (default suite option)
+
+Installed **by default** with `bin/install-suite` (opt out: `SKIP_EMULATORS=1`). Companion to Ghidra — simulate MCU/IoT boards without hardware.
+
+| Tool | Role | Launch |
+|------|------|--------|
+| **Renode** | Multi-node system emulation, GDB, CI scripts | `bin/renode` → `~/Applications/Renode/` |
+| **Velxio** | Local multi-board Arduino/ESP32/Pico simulator | `bin/velxio` (Docker/npm; tree under `tools/emulators/velxio/`) |
+
+```bash
+# Included in full suite install; or alone:
+~/Documents/DragonSDR/bin/install-suite --emulators-only
+~/Documents/DragonSDR/bin/renode
+~/Documents/DragonSDR/bin/velxio
+```
+
+Docs: [`tools/emulators/README.md`](tools/emulators/README.md). **No Wokwi.**  
+**ESP8266 note:** treat **ESP32 / ESP32-C3** as supported Wi‑Fi MCU targets; classic ESP8266 is not first-class in Renode/Velxio.
 
 ## License
 

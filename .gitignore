@@ -23,6 +23,7 @@ orhun/
 alemidev/
 zaghaghi/
 YS-L/
+Robbyant/
 
 # Generated / vendored docs (source of truth may live under tools/docs)
 Documentation/
@@ -44,6 +45,8 @@ hackrf/examples/
 tools/last-install-suite.log
 tools/ghidra/downloads/
 tools/ghidra/scripts/
+tools/emulators/downloads/
+tools/emulators/velxio/
 
 # Local / generated
 output.ts

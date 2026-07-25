@@ -1,0 +1,26 @@
+[Unit]
+Description=LingBot-Map 3D reconstruction viewer (viser)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Override paths via environment drop-in if needed:
+#   systemctl --user edit lingbot-map.service
+Environment=LINGBOT_MAP_PREFIX=%h/Data/lingbot-map
+Environment=LINGBOT_MAP_SRC=%h/Documents/DragonSDR/Robbyant/lingbot-map
+Environment=LINGBOT_MAP_PORT=8080
+# Inherit generated env if present
+EnvironmentFile=-%h/Data/lingbot-map/lingbot-map.env
+WorkingDirectory=%h/Documents/DragonSDR/Robbyant/lingbot-map
+ExecStart=%h/Documents/DragonSDR/tools/lingbot-map/serve.sh
+Restart=on-failure
+RestartSec=10
+# GPU inference can take a while on first load
+TimeoutStartSec=0
+
+# Soft resource hints (TITAN Xp friendly)
+Nice=5
+
+[Install]
+WantedBy=default.target

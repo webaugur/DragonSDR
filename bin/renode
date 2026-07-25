@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec "${RENODE_LAUNCH:-$HOME/Applications/Renode/renode-launch.sh}" "$@"

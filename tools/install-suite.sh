@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
-# Install the DragonSDR suite: apt packages, HackRF/Mayhem workspace, URH venv.
+# Install the DragonSDR suite: apt packages, HackRF/Mayhem workspace, URH venv,
+# and (by default) embedded emulators Renode + Velxio.
 #
 # Usage:
-#   ./tools/install-suite.sh                 # full suite
+#   ./tools/install-suite.sh                 # full suite (includes emulators)
 #   ./tools/install-suite.sh --verify-only
 #   ./tools/install-suite.sh --apt-only
 #   ./tools/install-suite.sh --hackrf-only
+#   ./tools/install-suite.sh --emulators-only
 #   SKIP_HACKRF_BUILD=1 ./tools/install-suite.sh
 #   SKIP_HAM=1 ./tools/install-suite.sh      # skip desktop ham apps
+#   SKIP_EMULATORS=1 ./tools/install-suite.sh  # skip Renode/Velxio
 #
 # Environment:
 #   DRAGONSDR_ROOT  Override root (default: parent of tools/)
@@ -23,12 +26,13 @@ LOG="${ROOT}/tools/last-install-suite.log"
 VERIFY_ONLY=0
 APT_ONLY=0
 HACKRF_ONLY=0
+EMULATORS_ONLY=0
 
 log() { printf '[%s] %s\n' "$(date +%H:%M:%S)" "$*" | tee -a "$LOG"; }
 die() { log "ERROR: $*"; exit 1; }
 
 usage() {
-  sed -n '2,14p' "$0" | sed 's/^# \?//'
+  sed -n '2,16p' "$0" | sed 's/^# \?//'
   exit "${1:-0}"
 }
 
@@ -37,6 +41,7 @@ for arg in "$@"; do
     --verify-only) VERIFY_ONLY=1 ;;
     --apt-only) APT_ONLY=1 ;;
     --hackrf-only) HACKRF_ONLY=1 ;;
+    --emulators-only) EMULATORS_ONLY=1 ;;
     -h|--help) usage 0 ;;
     *) die "Unknown argument: $arg (try --help)" ;;
   esac
@@ -70,12 +75,44 @@ verify_suite() {
   [[ -f "${HACKRF_HOME}/releases/FIRMWARE_mayhem_v2.4.0.zip" ]] || { log "MISS: Mayhem firmware zip"; fail=1; }
   [[ -d "${HACKRF_HOME}/sd-card/mayhem-v2.4.0/APPS" ]] || { log "MISS: Mayhem SD tree"; fail=1; }
   [[ -x "${HACKRF_HOME}/build/hackrf-tools/src/hackrf_sweep" ]] || { log "MISS: hackrf_sweep (built)"; fail=1; }
+  if [[ "${SKIP_EMULATORS:-0}" != 1 ]]; then
+    if [[ -x "${HOME}/Applications/Renode/renode-launch.sh" ]] \
+      || [[ -x "${HOME}/Applications/Renode/current/renode" ]]; then
+      log "OK: Renode"
+    else
+      log "MISS: Renode (run tools/emulators/install-renode.sh)"
+      fail=1
+    fi
+    [[ -x "${ROOT}/bin/renode" ]] || { log "MISS: bin/renode"; fail=1; }
+    if [[ -d "${ROOT}/tools/emulators/velxio/.git" ]] || [[ -d "${ROOT}/tools/emulators/velxio/package.json" ]]; then
+      log "OK: Velxio tree"
+    else
+      log "MISS: Velxio clone (run tools/emulators/install-velxio.sh)"
+      fail=1
+    fi
+    [[ -x "${ROOT}/bin/velxio" ]] || { log "MISS: bin/velxio"; fail=1; }
+  fi
   if [[ "$fail" -eq 0 ]]; then
     log "All suite checks passed."
   else
     log "Some suite checks failed."
     return 1
   fi
+}
+
+install_emulators() {
+  log "Embedded emulators (Renode + Velxio) — on by default"
+  chmod +x "${ROOT}/tools/emulators/install-"*.sh 2>/dev/null || true
+  # Non-fatal soft fail for network blips: record status, still verify later
+  if ! "${ROOT}/tools/emulators/install-renode.sh" 2>&1 | tee -a "$LOG"; then
+    log "WARN: Renode install reported errors (see log)"
+  fi
+  if ! "${ROOT}/tools/emulators/install-velxio.sh" 2>&1 | tee -a "$LOG"; then
+    log "WARN: Velxio install reported errors (see log)"
+  fi
+  log "  launch: ${ROOT}/bin/renode"
+  log "  launch: ${ROOT}/bin/velxio"
+  log "  docs:   ${ROOT}/tools/emulators/README.md"
 }
 
 install_apt() {
@@ -151,13 +188,20 @@ fi
 : >"$LOG"
 log "DragonSDR suite install starting (ROOT=$ROOT)"
 
-if [[ "$HACKRF_ONLY" -eq 1 ]]; then
+if [[ "$EMULATORS_ONLY" -eq 1 ]]; then
+  install_emulators
+elif [[ "$HACKRF_ONLY" -eq 1 ]]; then
   install_hackrf
 elif [[ "$APT_ONLY" -eq 1 ]]; then
   install_apt
 else
   install_apt
   install_hackrf
+  if [[ "${SKIP_EMULATORS:-0}" != 1 ]]; then
+    install_emulators
+  else
+    log "SKIP_EMULATORS=1 — skipping Renode/Velxio"
+  fi
 fi
 
 log "Verify"
@@ -165,6 +209,10 @@ if verify_suite; then
   log "Suite install complete."
   log "  source ${HACKRF_HOME}/scripts/env.sh"
   log "  ${ROOT}/bin/urh"
+  if [[ "${SKIP_EMULATORS:-0}" != 1 ]]; then
+    log "  ${ROOT}/bin/renode"
+    log "  ${ROOT}/bin/velxio"
+  fi
   log "  Full app stack (OpenWebRX, SDR++, …): see ${ROOT}/README.md"
 else
   die "Install finished with verification failures — see $LOG"
