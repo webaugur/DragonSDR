@@ -49,8 +49,11 @@ First run: if prompted to configure new extensions, enable the ones you want (Jy
 
 - **GhidraMCP** (LaurieWired) — MCP bridge for AI-assisted RE  
 - **ghidra-wasm-plugin** — WebAssembly support  
+- **Ghidrathon** (Mandiant) — Python 3 interpreter (**rebuilt for 12.1.2**; see `REBUILD-NOTES.md`)
 
-> Note: Many older FindCrypt / CppClassAnalyzer release zips target Ghidra 10.x and may **not** load on 12.1.2. Sources are kept under `scripts/` for rebuild if needed.
+> Note: Older FindCrypt **10.x** zips in `extensions/` may **not** load on 12.1.2. Prefer [GhidraFindcrypt 12.1.2](https://github.com/antoniovazquezblanco/GhidraFindcrypt/releases) for crypto constants.
+>
+> **C++ classes / RTTI:** do **not** use the EOL [Ghidra-Cpp-Class-Analyzer](https://github.com/astrelsky/Ghidra-Cpp-Class-Analyzer). Use stock Ghidra — Auto Analyze RTTI analyzers, then Script Manager → **C++** → **`RecoverClassesFromRTTIScript`**. Full lab steps: **`REBUILD-NOTES.md`** (section *C++ class / RTTI recovery*).
 
 ## Script collections (in Script Manager via `~/ghidra_scripts`)
 

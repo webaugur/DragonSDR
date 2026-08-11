@@ -77,3 +77,6 @@ Models/Antenna/import-failures.log
 
 # Other optional local clones
 ibelinp/
+
+# Ghidra extension build trees / venv (large)
+tools/ghidra/build/
