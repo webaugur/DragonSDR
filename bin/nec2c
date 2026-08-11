@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Prefer system nec2c; else nec-tools local build.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+for cand in \
+  /usr/bin/nec2c \
+  "${HOME}/.local/bin/nec2c" \
+  "${ROOT}/nec-tools/nec2c/src/nec2c" \
+  "${ROOT}/nec-tools/nec2c/nec2c"; do
+  if [[ -x "$cand" ]]; then
+    exec "$cand" "$@"
+  fi
+done
+echo "nec2c not found. Install: sudo apt install nec2c" >&2
+echo "  or: ${ROOT}/nec-tools/install-nec.sh" >&2
+exit 1

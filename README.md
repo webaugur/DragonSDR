@@ -19,6 +19,7 @@ IndianaDell and other lab machines should install the SDR stack from **here**, n
 SKIP_HACKRF_BUILD=1 ~/Documents/DragonSDR/bin/install-suite
 SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite         # skip fldigi/wsjtx/etc.
 SKIP_EMULATORS=1 ~/Documents/DragonSDR/bin/install-suite   # skip Renode/Velxio
+SKIP_NEC=1 ~/Documents/DragonSDR/bin/install-suite         # skip nec2c/xnec2c
 ```
 
 | Path | Role |
@@ -30,11 +31,35 @@ SKIP_EMULATORS=1 ~/Documents/DragonSDR/bin/install-suite   # skip Renode/Velxio
 | `tools/emulators/` | Renode + Velxio (on by default with suite install) |
 | `bin/hackrf-*`, `bin/urh` | Launchers for Mayhem / URH |
 | `bin/renode`, `bin/velxio` | Embedded emulator launchers |
+| `nec-tools/` | NEC-2 modeling ([webaugur/nec-tools](https://github.com/webaugur/nec-tools) private) |
+| `mma-tools/` | MMANA-GAL (MININEC) Wine install, manuals, NearField Viewer |
+| `bin/xnec2c`, `bin/nec2c`, `bin/nec2++` | Antenna NEC launchers |
 
 ```bash
 source ~/Documents/DragonSDR/bin/hackrf-env
 hackrf_info
 ~/Documents/DragonSDR/bin/urh
+```
+
+### Antenna modeling
+
+```bash
+# Native NEC-2 (default suite installs nec2c + xnec2c)
+~/Documents/DragonSDR/nec-tools/install-nec.sh   # also builds necpp (nec2++)
+~/Documents/DragonSDR/nec-tools/smoke-nec.sh     # P0–P3 smoke
+python3 ~/Documents/DragonSDR/nec-tools/python/compare_engines.py \
+  ~/Documents/DragonSDR/nec-tools/examples/dipole.nec
+python3 ~/Documents/DragonSDR/nec-tools/python/maa_to_nec.py \
+  ~/Documents/DragonSDR/nec-tools/examples/dipole.maa
+python3 ~/Documents/DragonSDR/nec-tools/python/optimize_dipole.py --freq 14.1
+python3 ~/Documents/DragonSDR/nec-tools/python/optimize_yagi.py --freq 146
+
+# MMANA .maa libraries (GitHub + local MMANA ANT/)
+~/Documents/DragonSDR/Models/Antenna/import-antenna-models.sh
+# optional: --convert --index --link-wine
+
+# MININEC / MMANA-GAL under Wine
+~/Documents/DragonSDR/mma-tools/install/install-all.sh
 ```
 
 ## Repos (webaugur)
@@ -212,6 +237,16 @@ Workstation rebuild no longer vendors SDR apt lists or the HackRF tree. After co
 - Script Manager also loads `~/ghidra_scripts/` (LazyGhidra, findcrypt, ninja helpers, …)
 
 ## Embedded emulators (default suite option)
+
+Velxio, Renode, and future emulators depend on a fully-offline QEMU build
+(`lcgamboa/qemu` fork).  DragonSDR now treats this as a **soft required**
+dependency (like Docker Compose):
+
+- Builder: `tools/emulators/qemu-lcgamboa/build-all.sh`
+- Pinned commit + target list live in the same directory.
+- IndianaDell verification (`bin/fix-indianadell.sh --fix`) will see and
+  optionally repair missing QEMU-lcgamboa via the DragonSDR hook.
+- Output lands in `~/Applications/QEMU-lcgamboa/current/`.
 
 Installed **by default** with `bin/install-suite` (opt out: `SKIP_EMULATORS=1`). Companion to Ghidra — simulate MCU/IoT boards without hardware.
 

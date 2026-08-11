@@ -81,13 +81,22 @@ Pair with Ghidra: reverse the same `.elf` / flash image under `tools/ghidra/`, t
 Velxio is primarily a **local web app** (frontend + backend). After `install-velxio.sh`:
 
 ```bash
-cd ~/Documents/DragonSDR/tools/emulators/velxio
-docker compose up
+cd ~/Applications/Velxio/velxio
+docker compose up --build
 # or follow script output for npm/dev mode
 ```
 
-Then open the printed URL (often `http://127.0.0.1:5173` or the compose-mapped port).  
+Then open the printed URL (compose maps to `http://127.0.0.1:3080`).  
 Public hosted UI: [https://velxio.dev](https://velxio.dev) (lab preference: **local** clone for offline / private firmware).
+
+**Docker Compose provider:** DragonSDR expects the IndianaDell-managed runtime:
+
+```bash
+~/Documents/IndianaDell/bin/fix-indianadell.sh --fix
+# installs docker.io + docker-compose-v2 (soft dependency)
+```
+
+The DragonSDR `bin/verify-indianadell.sh` hook now reports Docker Compose status back to IndianaDell.
 
 ## Lab use cases (SDR-adjacent)
 

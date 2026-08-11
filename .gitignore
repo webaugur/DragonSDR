@@ -61,3 +61,19 @@ __pycache__/
 # Windows reverse-engineering dump leftovers (not part of suite)
 KDH.*.resources
 costura.*.compressed
+
+# Nested private component repos (own remotes)
+mma-tools/
+nec-tools/
+
+# Antenna model libraries (fetched by Models/Antenna/import-antenna-models.sh)
+Models/Antenna/_upstream/
+Models/Antenna/bundled/
+Models/Antenna/handiko-*/
+Models/Antenna/lonney9-*/
+Models/Antenna/converted/
+Models/Antenna/index.csv
+Models/Antenna/import-failures.log
+
+# Other optional local clones
+ibelinp/

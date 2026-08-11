@@ -12,12 +12,24 @@ APT_SDR=(
   airspy libairspy-dev bladerf libbladerf-dev limesuite limesuite-udev uhd-host libuhd-dev
   gqrx-sdr quisk inspectrum hacktv dfu-util openocd
   gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi ccache lz4 bzip2
+  obs-studio v4l2loopback-dkms ffmpeg
 )
 
 # Desktop ham / digital modes (optional but installed by default suite).
 APT_HAM=(
   libhamlib-dev libhamlib-utils python3-hamlib
   fldigi wsjtx wsjtx-data chirp direwolf gpredict grig xastir xastir-data
+)
+
+# NEC-2 antenna modeling (native Linux; complements mma-tools MININEC/Wine).
+# Skip with SKIP_NEC=1. Build deps for optional source builds of xnec2c/necpp.
+APT_NEC=(
+  nec2c xnec2c
+)
+
+APT_NEC_BUILD=(
+  libgtk-3-dev autoconf automake libtool
+  libopenblas-dev
 )
 
 # Extra build/runtime libs commonly needed for OOT modules and host tools.
@@ -31,4 +43,4 @@ APT_SDR_BUILD=(
 )
 
 # Combined list used by install-suite / verify.
-APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}" "${APT_HAM[@]}")
+APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}" "${APT_HAM[@]}" "${APT_NEC[@]}")

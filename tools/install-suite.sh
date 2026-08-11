@@ -11,6 +11,7 @@
 #   SKIP_HACKRF_BUILD=1 ./tools/install-suite.sh
 #   SKIP_HAM=1 ./tools/install-suite.sh      # skip desktop ham apps
 #   SKIP_EMULATORS=1 ./tools/install-suite.sh  # skip Renode/Velxio
+#   SKIP_NEC=1 ./tools/install-suite.sh      # skip nec2c/xnec2c
 #
 # Environment:
 #   DRAGONSDR_ROOT  Override root (default: parent of tools/)
@@ -53,6 +54,18 @@ source "${SCRIPT_DIR}/package-lists.sh"
 if [[ "${SKIP_HAM:-0}" == 1 ]]; then
   APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}")
 fi
+if [[ "${SKIP_NEC:-0}" == 1 ]]; then
+  # Rebuild suite without NEC packages (may already have omitted HAM)
+  _suite=()
+  for p in "${APT_SUITE[@]}"; do
+    skip=0
+    for n in "${APT_NEC[@]}"; do
+      [[ "$p" == "$n" ]] && skip=1 && break
+    done
+    [[ $skip -eq 0 ]] && _suite+=("$p")
+  done
+  APT_SUITE=("${_suite[@]}")
+fi
 
 verify_suite() {
   local fail=0
@@ -70,6 +83,13 @@ verify_suite() {
     for c in fldigi wsjtx chirpw; do
       command -v "$c" >/dev/null || { log "MISS cmd: $c"; fail=1; }
     done
+  fi
+  if [[ "${SKIP_NEC:-0}" != 1 ]]; then
+    for c in nec2c xnec2c; do
+      command -v "$c" >/dev/null || { log "MISS cmd: $c (NEC)"; fail=1; }
+    done
+    [[ -x "${ROOT}/bin/nec2c" ]] || { log "MISS: bin/nec2c"; fail=1; }
+    [[ -x "${ROOT}/bin/xnec2c" ]] || { log "MISS: bin/xnec2c"; fail=1; }
   fi
   [[ -x "${HACKRF_HOME}/venv-urh/bin/urh" ]] || { log "MISS: URH venv"; fail=1; }
   [[ -f "${HACKRF_HOME}/releases/FIRMWARE_mayhem_v2.4.0.zip" ]] || { log "MISS: Mayhem firmware zip"; fail=1; }
@@ -91,6 +111,15 @@ verify_suite() {
       fail=1
     fi
     [[ -x "${ROOT}/bin/velxio" ]] || { log "MISS: bin/velxio"; fail=1; }
+
+    # QEMU-lcgamboa is a soft DragonSDR dependency (offline Velxio Docker builds, future emulators)
+    local qemu_dir="${QEMU_LCGAMBOA_DIR:-$HOME/Applications/QEMU-lcgamboa}"
+    if [[ -L "$qemu_dir/current" && -d "$qemu_dir/current/lib" ]]; then
+      log "OK: QEMU-lcgamboa"
+    else
+      log "MISS: QEMU-lcgamboa (soft — run tools/emulators/qemu-lcgamboa/build-all.sh)"
+      # non-fatal; Velxio can fall back to license key or network download
+    fi
   fi
   if [[ "$fail" -eq 0 ]]; then
     log "All suite checks passed."
@@ -155,6 +184,9 @@ install_hackrf() {
 
   if [[ "${SKIP_HACKRF_BUILD:-0}" != 1 ]]; then
     log "Build HackRF host tools"
+    # Always start from a clean build tree to avoid stale CMakeCache.txt
+    # from a previous build in a different source tree (e.g. IndianaDell).
+    rm -rf "${HACKRF_HOME}/build"
     mkdir -p "${HACKRF_HOME}/build"
     cmake -S "${HACKRF_HOME}/repos/hackrf/host" -B "${HACKRF_HOME}/build" \
       -DCMAKE_INSTALL_PREFIX="${HACKRF_HOME}/local"

@@ -1,0 +1,10 @@
+# Full libraries are fetched locally (not vendored in git by default)
+_upstream/
+bundled/
+handiko-AntennaFiles-OLD/
+handiko-Antenna-MMANA-NEC/
+lonney9-Antenna-Models/
+converted/
+index.csv
+import-failures.log
+*.log

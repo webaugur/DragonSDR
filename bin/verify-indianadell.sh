@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# verify-indianadell.sh  (DragonSDR stub)
+# verify-indianadell.sh  (DragonSDR)
 #
 # Purpose: optional hook called by IndianaDell's bin/fix-indianadell.sh
 #          when it wants to know the SDR/ham/HackRF stack status.
 #
-# This stub is intentionally minimal.  A full implementation lives in
-# DragonSDR's own tooling (tools/install-suite.sh --verify-only or similar).
+# This hook now also verifies Docker Compose (required by Velxio, Renode
+# sidequests, and other DragonSDR tools that use docker compose).
 #
 # When run with --verify-only it should exit 0 if the suite is complete,
 # non-zero if anything the caller considers "required for this host" is missing.
@@ -20,13 +20,57 @@
 #
 set -euo pipefail
 
+check_docker_compose() {
+  if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    echo "OK   docker compose (DragonSDR)"
+    return 0
+  else
+    echo "MISS docker compose (DragonSDR sidequests need it: Velxio, Renode, lingbot-map)"
+    return 1
+  fi
+}
+
+check_qemu_lcgamboa() {
+  local qemu_dir="${QEMU_LCGAMBOA_DIR:-$HOME/Applications/QEMU-lcgamboa}"
+  if [[ -L "$qemu_dir/current" && -d "$qemu_dir/current/lib" ]]; then
+    echo "OK   qemu-lcgamboa (DragonSDR)"
+    return 0
+  else
+    echo "MISS qemu-lcgamboa (DragonSDR sidequests need it: Velxio, future emulators)"
+    return 1
+  fi
+}
+
+check_nec_tools() {
+  # Non-fatal: report NEC stack if present; do not fail the IndianaDell hook.
+  local root
+  root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  if command -v nec2c >/dev/null 2>&1 || [[ -x /usr/bin/nec2c ]]; then
+    echo "OK   nec2c (DragonSDR nec-tools)"
+  else
+    echo "MISS nec2c (optional: apt install nec2c / nec-tools/install-nec.sh)"
+  fi
+  if command -v xnec2c >/dev/null 2>&1 || [[ -x /usr/bin/xnec2c ]]; then
+    echo "OK   xnec2c (DragonSDR nec-tools)"
+  else
+    echo "MISS xnec2c (optional)"
+  fi
+  if [[ -x "${root}/bin/nec2++" ]] && "${root}/bin/nec2++" -v >/dev/null 2>&1; then
+    echo "OK   nec2++ (necpp)"
+  else
+    echo "MISS nec2++ (optional: nec-tools/install-nec.sh)"
+  fi
+  return 0
+}
+
 case "${1:-}" in
   --verify-only)
-    # Real implementation would call:
-    #   tools/install-suite.sh --verify-only
-    # or iterate DragonSDR's package-lists.sh + bin/ launchers.
-    # For now we simply report that DragonSDR decides its own completeness.
-    echo "[DragonSDR] verify hook present (stub)"
+    echo "[DragonSDR] verify hook running"
+    check_docker_compose || true
+    check_qemu_lcgamboa || true
+    check_nec_tools || true
+    # Real SDR/ham verification would go here (tools/install-suite.sh --verify-only etc.)
+    echo "[DragonSDR] verify hook complete"
     exit 0
     ;;
   *)

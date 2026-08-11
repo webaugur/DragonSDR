@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Run real nec2++ binary (never PATH wrapper — avoids recursion).
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export LD_LIBRARY_PATH="${HOME}/.local/lib:${HOME}/.local/lib64:${ROOT}/nec-tools/necpp/build/src${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+is_script() {
+  head -c 2 "$1" 2>/dev/null | grep -q '#!'
+}
+for cand in \
+  "${HOME}/.local/bin/nec2++.real" \
+  "${ROOT}/nec-tools/necpp/build/src/nec2++" \
+  "${ROOT}/nec-tools/necpp/build/nec2++" \
+  /usr/local/bin/nec2++; do
+  if [[ -x "$cand" ]] && ! is_script "$cand"; then
+    exec "$cand" "$@"
+  fi
+done
+echo "nec2++ not found. Build with: ${ROOT}/nec-tools/install-nec.sh" >&2
+exit 1

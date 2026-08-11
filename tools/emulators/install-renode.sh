@@ -63,6 +63,20 @@ exit 1
 EOF
 chmod +x "$LAUNCH"
 
+# Desktop launcher in ~/Applications/ root (matching AbracaDABra.desktop etc.)
+DESKTOP="$HOME/Applications/Renode.desktop"
+cat >"$DESKTOP" <<EOF
+[Desktop Entry]
+Name=Renode
+Comment=Embedded systems simulator (Renode $VERSION)
+Exec=$LAUNCH
+Path=$APP
+Icon=$APP/renode-icon-64.svg
+Terminal=true
+Type=Application
+Categories=Development;Electronics;Emulator;
+EOF
+
 # Suite bin wrapper
 SUITE_BIN="$ROOT/bin/renode"
 cat >"$SUITE_BIN" <<EOF

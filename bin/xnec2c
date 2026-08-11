@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Prefer PATH/system xnec2c; else nec-tools local build.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ -x /usr/bin/xnec2c ]]; then
+  exec /usr/bin/xnec2c "$@"
+fi
+if command -v xnec2c >/dev/null 2>&1; then
+  _x="$(command -v xnec2c)"
+  if [[ "$(readlink -f "$_x" 2>/dev/null || true)" != "$(readlink -f "$0")" ]]; then
+    exec "$_x" "$@"
+  fi
+fi
+for cand in \
+  "${ROOT}/nec-tools/xnec2c/src/xnec2c" \
+  "${ROOT}/nec-tools/xnec2c/xnec2c" \
+  "${HOME}/.local/bin/xnec2c"; do
+  if [[ -x "$cand" ]]; then
+    exec "$cand" "$@"
+  fi
+done
+echo "xnec2c not found. Install: sudo apt install xnec2c" >&2
+echo "  or: ${ROOT}/nec-tools/install-nec.sh" >&2
+exit 1
