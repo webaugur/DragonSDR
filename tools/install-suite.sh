@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Install the DragonSDR suite: apt packages, HackRF/Mayhem workspace, URH venv,
-# and (by default) embedded emulators Renode + Velxio.
+# embedded emulators Renode + Velxio, and optional default clones (e.g. SX1262_CHIRP).
 #
 # Usage:
-#   ./tools/install-suite.sh                 # full suite (includes emulators)
+#   ./tools/install-suite.sh                 # full suite (includes emulators + SX1262_CHIRP)
 #   ./tools/install-suite.sh --verify-only
 #   ./tools/install-suite.sh --apt-only
 #   ./tools/install-suite.sh --hackrf-only
@@ -13,6 +13,7 @@
 #   SKIP_EMULATORS=1 ./tools/install-suite.sh  # skip Renode/Velxio
 #   SKIP_NEC=1 ./tools/install-suite.sh      # skip nec2c/xnec2c
 #   SKIP_RE=1 ./tools/install-suite.sh       # skip FOSS RE tools (radare2, binwalk, …)
+#   SKIP_SX1262_CHIRP=1 ./tools/install-suite.sh  # skip ibelinp/SX1262_CHIRP clone
 #
 # Environment:
 #   DRAGONSDR_ROOT  Override root (default: parent of tools/)
@@ -133,6 +134,15 @@ verify_suite() {
       # non-fatal; Velxio can fall back to license key or network download
     fi
   fi
+  if [[ "${SKIP_SX1262_CHIRP:-0}" != 1 ]]; then
+    local chirp="${ROOT}/ibelinp/SX1262_CHIRP"
+    if [[ -d "${chirp}/.git" ]] || [[ -f "${chirp}/README.md" ]]; then
+      log "OK: SX1262_CHIRP (${chirp})"
+    else
+      log "MISS: ibelinp/SX1262_CHIRP (default-on clone; SKIP_SX1262_CHIRP=1 to opt out)"
+      fail=1
+    fi
+  fi
   if [[ "$fail" -eq 0 ]]; then
     log "All suite checks passed."
   else
@@ -179,6 +189,29 @@ clone_if_missing() {
   else
     git clone --depth 1 "$url" "${HACKRF_HOME}/repos/${name}"
   fi
+}
+
+# Clone into ROOT (meta layout); optional components stay gitignored.
+clone_root_if_missing() {
+  local url="$1" rel="$2"
+  local dest="${ROOT}/${rel}"
+  if [[ -d "${dest}/.git" ]]; then
+    log "  skip clone ${rel}"
+  else
+    mkdir -p "$(dirname "$dest")"
+    log "  clone ${rel}"
+    git clone --depth 1 "$url" "$dest"
+  fi
+}
+
+install_sx1262_chirp() {
+  # Optional but default-on: SX1262 GPS-locked LoRa chirp radar notebook
+  # https://github.com/ibelinp/SX1262_CHIRP
+  log "SX1262_CHIRP (ibelinp) — optional, installed by default"
+  clone_root_if_missing https://github.com/ibelinp/SX1262_CHIRP.git ibelinp/SX1262_CHIRP
+  log "  path: ${ROOT}/ibelinp/SX1262_CHIRP"
+  log "  plots: python3 ${ROOT}/ibelinp/SX1262_CHIRP/examples/chirp_plots.py"
+  log "  docs:  ${ROOT}/ibelinp/SX1262_CHIRP/README.md"
 }
 
 install_hackrf() {
@@ -246,6 +279,11 @@ else
   else
     log "SKIP_EMULATORS=1 — skipping Renode/Velxio"
   fi
+  if [[ "${SKIP_SX1262_CHIRP:-0}" != 1 ]]; then
+    install_sx1262_chirp
+  else
+    log "SKIP_SX1262_CHIRP=1 — skipping ibelinp/SX1262_CHIRP"
+  fi
 fi
 
 log "Verify"
@@ -256,6 +294,9 @@ if verify_suite; then
   if [[ "${SKIP_EMULATORS:-0}" != 1 ]]; then
     log "  ${ROOT}/bin/renode"
     log "  ${ROOT}/bin/velxio"
+  fi
+  if [[ "${SKIP_SX1262_CHIRP:-0}" != 1 ]]; then
+    log "  SX1262_CHIRP: ${ROOT}/ibelinp/SX1262_CHIRP"
   fi
   log "  Full app stack (OpenWebRX, SDR++, …): see ${ROOT}/README.md"
 else

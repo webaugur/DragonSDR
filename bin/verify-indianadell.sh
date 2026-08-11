@@ -63,12 +63,26 @@ check_nec_tools() {
   return 0
 }
 
+check_sx1262_chirp() {
+  # Non-fatal: suite default clone; IndianaDell hook never fails on this.
+  local root chirp
+  root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  chirp="${root}/ibelinp/SX1262_CHIRP"
+  if [[ -d "${chirp}/.git" ]] || [[ -f "${chirp}/README.md" ]]; then
+    echo "OK   SX1262_CHIRP (ibelinp; suite default)"
+  else
+    echo "MISS SX1262_CHIRP (optional default: bin/install-suite or SKIP_SX1262_CHIRP=1)"
+  fi
+  return 0
+}
+
 case "${1:-}" in
   --verify-only)
     echo "[DragonSDR] verify hook running"
     check_docker_compose || true
     check_qemu_lcgamboa || true
     check_nec_tools || true
+    check_sx1262_chirp || true
     # Real SDR/ham verification would go here (tools/install-suite.sh --verify-only etc.)
     echo "[DragonSDR] verify hook complete"
     exit 0

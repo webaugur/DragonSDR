@@ -21,6 +21,7 @@ SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite         # skip fldigi/wsjtx/e
 SKIP_EMULATORS=1 ~/Documents/DragonSDR/bin/install-suite   # skip Renode/Velxio
 SKIP_NEC=1 ~/Documents/DragonSDR/bin/install-suite         # skip nec2c/xnec2c
 SKIP_RE=1 ~/Documents/DragonSDR/bin/install-suite          # skip FOSS RE tools
+SKIP_SX1262_CHIRP=1 ~/Documents/DragonSDR/bin/install-suite  # skip ibelinp/SX1262_CHIRP
 ```
 
 | Path | Role |
@@ -31,6 +32,7 @@ SKIP_RE=1 ~/Documents/DragonSDR/bin/install-suite          # skip FOSS RE tools
 | `tools/install-deps.sh` | Per-upstream compile/runtime deps |
 | `hackrf/` | HackRF host tools, PortaPack Mayhem, URH workspace |
 | `tools/emulators/` | Renode + Velxio (on by default with suite install) |
+| `ibelinp/SX1262_CHIRP/` | SX1262 GPS-locked chirp radar notebook (**optional, default-on**) |
 | `bin/hackrf-*`, `bin/urh` | Launchers for Mayhem / URH |
 | `bin/renode`, `bin/velxio` | Embedded emulator launchers |
 | `nec-tools/` | NEC-2 modeling ([webaugur/nec-tools](https://github.com/webaugur/nec-tools) private) |
@@ -151,6 +153,7 @@ Details, VRAM flags, and systemd notes: [`tools/lingbot-map/README.md`](tools/li
   tools/lingbot-map/             # install + serve + systemd unit
   tools/emulators/               # Renode + Velxio installers / docs (suite default)
   tools/emulators/velxio/        # Velxio clone (gitignored bulk)
+  ibelinp/SX1262_CHIRP/          # SX1262 chirp radar notes (suite default; gitignored)
   …other upstream trees…         # optional; gitignored here
 
 ~/Applications/OpenWebRX/        # runtime prefix (not in git)
@@ -296,6 +299,26 @@ Installed **by default** with `bin/install-suite` (opt out: `SKIP_EMULATORS=1`).
 
 Docs: [`tools/emulators/README.md`](tools/emulators/README.md). **No Wokwi.**  
 **ESP8266 note:** treat **ESP32 / ESP32-C3** as supported Wi‑Fi MCU targets; classic ESP8266 is not first-class in Renode/Velxio.
+
+## SX1262 chirp radar (optional, installed by default)
+
+[ibelinp/SX1262_CHIRP](https://github.com/ibelinp/SX1262_CHIRP) — experimenter’s notebook: use a Semtech **SX1262** as a GPSDO-locked linear-FM chirp source for coherent radar / dechirp work with an SDR.
+
+| | |
+|--|--|
+| **Default** | Cloned by `bin/install-suite` → `ibelinp/SX1262_CHIRP/` |
+| **Opt out** | `SKIP_SX1262_CHIRP=1` |
+| **Tracked?** | No — under gitignored `ibelinp/` (local clone only) |
+| **Plots** | `python3 ibelinp/SX1262_CHIRP/examples/chirp_plots.py` (needs `python3-numpy` / `scipy` / `matplotlib` from suite apt) |
+
+```bash
+# included in full suite install; or alone after clone:
+git clone --depth 1 https://github.com/ibelinp/SX1262_CHIRP.git \
+  ~/Documents/DragonSDR/ibelinp/SX1262_CHIRP
+python3 ~/Documents/DragonSDR/ibelinp/SX1262_CHIRP/examples/chirp_plots.py
+```
+
+Read the upstream README for legal/safety notes before transmitting.
 
 ## License
 

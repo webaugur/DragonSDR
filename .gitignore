@@ -75,7 +75,8 @@ Models/Antenna/converted/
 Models/Antenna/index.csv
 Models/Antenna/import-failures.log
 
-# Other optional local clones
+# Optional local clones under ibelinp/ (not vendored; suite may clone some by default)
+# e.g. SX1262_CHIRP — installed by tools/install-suite.sh unless SKIP_SX1262_CHIRP=1
 ibelinp/
 
 # Ghidra extension build trees / venv (large)
