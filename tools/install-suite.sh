@@ -12,6 +12,7 @@
 #   SKIP_HAM=1 ./tools/install-suite.sh      # skip desktop ham apps
 #   SKIP_EMULATORS=1 ./tools/install-suite.sh  # skip Renode/Velxio
 #   SKIP_NEC=1 ./tools/install-suite.sh      # skip nec2c/xnec2c
+#   SKIP_RE=1 ./tools/install-suite.sh       # skip FOSS RE tools (radare2, binwalk, …)
 #
 # Environment:
 #   DRAGONSDR_ROOT  Override root (default: parent of tools/)
@@ -51,20 +52,16 @@ done
 # shellcheck source=package-lists.sh
 source "${SCRIPT_DIR}/package-lists.sh"
 
-if [[ "${SKIP_HAM:-0}" == 1 ]]; then
-  APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}")
+# Rebuild APT_SUITE from components so SKIP_* flags compose cleanly.
+APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}")
+if [[ "${SKIP_HAM:-0}" != 1 ]]; then
+  APT_SUITE+=("${APT_HAM[@]}")
 fi
-if [[ "${SKIP_NEC:-0}" == 1 ]]; then
-  # Rebuild suite without NEC packages (may already have omitted HAM)
-  _suite=()
-  for p in "${APT_SUITE[@]}"; do
-    skip=0
-    for n in "${APT_NEC[@]}"; do
-      [[ "$p" == "$n" ]] && skip=1 && break
-    done
-    [[ $skip -eq 0 ]] && _suite+=("$p")
-  done
-  APT_SUITE=("${_suite[@]}")
+if [[ "${SKIP_NEC:-0}" != 1 ]]; then
+  APT_SUITE+=("${APT_NEC[@]}")
+fi
+if [[ "${SKIP_RE:-0}" != 1 ]]; then
+  APT_SUITE+=("${APT_RE[@]}")
 fi
 
 verify_suite() {
@@ -90,6 +87,21 @@ verify_suite() {
     done
     [[ -x "${ROOT}/bin/nec2c" ]] || { log "MISS: bin/nec2c"; fail=1; }
     [[ -x "${ROOT}/bin/xnec2c" ]] || { log "MISS: bin/xnec2c"; fail=1; }
+  fi
+  if [[ "${SKIP_RE:-0}" != 1 ]]; then
+    for c in radare2 r2 iaito binwalk cstool gdb-multiarch ndisasm; do
+      command -v "$c" >/dev/null || { log "MISS cmd: $c (RE/FOSS)"; fail=1; }
+    done
+    # edb binary name varies
+    if ! command -v edb >/dev/null 2>&1 && ! command -v edb-debugger >/dev/null 2>&1; then
+      log "MISS cmd: edb (RE/FOSS)"
+      fail=1
+    fi
+    # Soft checks (not fatal)
+    command -v binsider >/dev/null 2>&1 || log "SOFT: binsider not on PATH (cargo install; tools/re/install-re-tools.sh --cargo)"
+    [[ -x "${HOME}/Applications/Ghidra/ghidra-launch.sh" ]] \
+      || [[ -d "${HOME}/Applications/Ghidra/current" ]] \
+      || log "SOFT: Ghidra not under ~/Applications/Ghidra (see tools/ghidra/README.md)"
   fi
   [[ -x "${HACKRF_HOME}/venv-urh/bin/urh" ]] || { log "MISS: URH venv"; fail=1; }
   [[ -f "${HACKRF_HOME}/releases/FIRMWARE_mayhem_v2.4.0.zip" ]] || { log "MISS: Mayhem firmware zip"; fail=1; }

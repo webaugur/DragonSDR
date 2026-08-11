@@ -20,12 +20,14 @@ SKIP_HACKRF_BUILD=1 ~/Documents/DragonSDR/bin/install-suite
 SKIP_HAM=1 ~/Documents/DragonSDR/bin/install-suite         # skip fldigi/wsjtx/etc.
 SKIP_EMULATORS=1 ~/Documents/DragonSDR/bin/install-suite   # skip Renode/Velxio
 SKIP_NEC=1 ~/Documents/DragonSDR/bin/install-suite         # skip nec2c/xnec2c
+SKIP_RE=1 ~/Documents/DragonSDR/bin/install-suite          # skip FOSS RE tools
 ```
 
 | Path | Role |
 |------|------|
 | `tools/install-suite.sh` | End-to-end suite installer |
-| `tools/package-lists.sh` | Apt package arrays (`APT_SDR`, `APT_HAM`, …) |
+| `tools/package-lists.sh` | Apt package arrays (`APT_SDR`, `APT_HAM`, `APT_RE`, …) |
+| `tools/re/` | FOSS RE tools (radare2, binwalk, …) + optional $0 freeware notes |
 | `tools/install-deps.sh` | Per-upstream compile/runtime deps |
 | `hackrf/` | HackRF host tools, PortaPack Mayhem, URH workspace |
 | `tools/emulators/` | Renode + Velxio (on by default with suite install) |
@@ -229,7 +231,37 @@ Workstation rebuild no longer vendors SDR apt lists or the HackRF tree. After co
 ~/Documents/DragonSDR/bin/install-suite
 ```
 
-## Ghidra (RE)
+## Reverse engineering / disassembly
+
+**Policy:** open-source / free-software tools are **suite defaults**; **$0 proprietary freeware** (IDA Free, Binary Ninja Free) is **opt-in only**; paid IDA/BN are out of scope.
+
+| Default FOSS (`APT_RE`, unless `SKIP_RE=1`) | Role |
+|---------------------------------------------|------|
+| radare2 + iaito | CLI + GUI analysis |
+| binwalk | Firmware carve/extract |
+| capstone-tool (`cstool`) | Multi-arch disasm |
+| gdb-multiarch | Multi-arch debug |
+| edb-debugger | GUI debugger |
+| nasm (`ndisasm`) | x86 flat disasm |
+| objdump | Host binutils |
+
+| Also FOSS lab tracks | Role |
+|----------------------|------|
+| Ghidra | Primary static RE / decompile |
+| binsider | ELF TUI (`tools/re/install-re-tools.sh --cargo`) |
+| Renode + GDB | Firmware emulation / step |
+
+```bash
+~/Documents/DragonSDR/tools/re/install-re-tools.sh --apt
+~/Documents/DragonSDR/tools/re/smoke-re.sh
+# Optional $0 proprietary (prints download instructions only):
+~/Documents/DragonSDR/tools/re/install-re-tools.sh --ida-free
+~/Documents/DragonSDR/tools/re/install-re-tools.sh --bn-free
+```
+
+Full matrix: `tools/re/README.md`
+
+### Ghidra
 
 - Install: `~/Applications/Ghidra/current` (12.1.2) + JDK 21  
 - Launch: `~/Applications/Ghidra/ghidra-launch.sh`  

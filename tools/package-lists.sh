@@ -32,6 +32,17 @@ APT_NEC_BUILD=(
   libopenblas-dev
 )
 
+# Reverse engineering / disassembly — FOSS only, default-on.
+# Skip with SKIP_RE=1.
+# Policy: open-source/free-software tools are default; $0 proprietary freeware is opt-in only.
+APT_RE=(
+  radare2 iaito
+  binwalk capstone-tool
+  gdb-multiarch
+  edb-debugger
+  nasm
+)
+
 # Extra build/runtime libs commonly needed for OOT modules and host tools.
 APT_SDR_BUILD=(
   build-essential cmake pkg-config git curl wget unzip
@@ -43,4 +54,4 @@ APT_SDR_BUILD=(
 )
 
 # Combined list used by install-suite / verify.
-APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}" "${APT_HAM[@]}" "${APT_NEC[@]}")
+APT_SUITE=("${APT_SDR_BUILD[@]}" "${APT_SDR[@]}" "${APT_HAM[@]}" "${APT_NEC[@]}" "${APT_RE[@]}")

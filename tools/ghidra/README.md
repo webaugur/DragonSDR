@@ -1,5 +1,20 @@
 # Ghidra for DragonSDR
 
+## Lab RE stack
+
+| Tool | Role |
+|------|------|
+| **Ghidra** (this tree) | Primary static RE / decompile |
+| **radare2** + **iaito** | CLI + GUI (suite default; see `tools/re/`) |
+| **binwalk**, **cstool**, **ndisasm**, **edb**, **gdb-multiarch** | FOSS suite defaults (`APT_RE`) |
+| **binsider** | ELF TUI companion (`orhun/binsider/`) |
+| **objdump** | CLI disasm (binutils) |
+| **Renode + GDB** | Dynamic debug with static RE |
+
+**Policy:** FOSS tools are suite defaults. **$0 proprietary freeware** (IDA Free, Binary Ninja Free) is opt-in only via `tools/re/install-re-tools.sh`. Paid IDA/BN are out of scope.
+
+See **`tools/re/README.md`** for install, smoke, and package notes.
+
 ## Install locations
 
 | Path | Contents |
